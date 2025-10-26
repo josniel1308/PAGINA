@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Una Petición Especial</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --pastel-red: #ffb3c1;
+            --pastel-blue: #b3e0ff;
+            --pastel-purple: #d9b3ff;
+            --light-pink: #ffe6ea;
+            --light-blue: #e6f7ff;
+            --light-purple: #f0e6ff;
+            --text-dark: #4a4a4a;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--light-pink), var(--light-blue), var(--light-purple));
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 15px;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Header */
+        header {
+            text-align: center;
+            padding: 30px 15px;
+            margin-bottom: 20px;
+            position: relative;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #8a2be2;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            animation: fadeInDown 1.5s ease-out;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: #6a5acd;
+            animation: fadeInUp 1.5s ease-out 0.5s both;
+        }
+        
+        /* Secciones */
+        section {
+            margin: 25px 0;
+            padding: 25px 20px;
+            border-radius: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 1.5s ease-out;
+        }
+        
+        section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--pastel-red), var(--pastel-blue), var(--pastel-purple));
+        }
+        
+        h2 {
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            color: #6a0dad;
+            text-align: center;
+        }
+        
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        /* Tarjetas de habilidades */
+        .skills-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 25px;
+        }
+        
+        .skill-card {
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            animation: float 4s ease-in-out infinite;
+            z-index: 2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 200px;
+        }
+        
+        .skill-card:active {
+            transform: scale(0.98);
+        }
+        
+        .skill-card:nth-child(1) {
+            background-color: var(--pastel-red);
+            animation-delay: 0s;
+        }
+        
+        .skill-card:nth-child(2) {
+            background-color: var(--pastel-blue);
+            animation-delay: 0.5s;
+        }
+        
+        .skill-card:nth-child(3) {
+            background-color: var(--pastel-purple);
+            animation-delay: 1s;
+        }
+        
+        .skill-card:nth-child(4) {
+            background-color: var(--light-pink);
+            animation-delay: 1.5s;
+        }
+        
+        .skill-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        /* ELEMENTOS FLOTANTES GLOBALES */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        .code-element {
+            position: absolute;
+            font-family: monospace;
+            font-size: 1rem;
+            color: #ff6b6b;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            opacity: 0;
+        }
+        
+        .music-element {
+            position: absolute;
+            font-size: 1.8rem;
+            color: #4ecdc4;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            opacity: 0;
+        }
+        
+        .poetry-element {
+            position: absolute;
+            font-size: 1.1rem;
+            color: #ff9ff3;
+            font-style: italic;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            opacity: 0;
+        }
+        
+        .song-element {
+            position: absolute;
+            font-size: 1.3rem;
+            color: #f368e0;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            opacity: 0;
+        }
+        
+        /* POEMA CORREGIDO - MEJOR DISEÑO */
+        .poem-section {
+            padding: 30px 15px !important;
+        }
+        
+        .poem {
+            font-style: italic;
+            line-height: 1.8;
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, rgba(255, 179, 193, 0.3), rgba(179, 224, 255, 0.3));
+            border-radius: 15px;
+            position: relative;
+            animation: pulse 3s ease-in-out infinite;
+            z-index: 2;
+            max-width: 100%;
+            margin: 0 auto;
+            font-size: 1.1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .poem p {
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 0 10px;
+        }
+        
+        .poem p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .poem::before, .poem::after {
+            content: '"';
+            font-size: 3.5rem;
+            color: var(--pastel-purple);
+            position: absolute;
+            z-index: 1;
+            opacity: 0.7;
+        }
+        
+        .poem::before {
+            top: 10px;
+            left: 15px;
+        }
+        
+        .poem::after {
+            bottom: 10px;
+            right: 15px;
+        }
+        
+        /* Lista de compromisos */
+        .commitment-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .commitment-list li {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            border-left: 4px solid var(--pastel-purple);
+            animation: slideInRight 1s ease-out;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .commitment-list li:nth-child(1) { animation-delay: 0.2s; }
+        .commitment-list li:nth-child(2) { animation-delay: 0.4s; }
+        .commitment-list li:nth-child(3) { animation-delay: 0.6s; }
+        .commitment-list li:nth-child(4) { animation-delay: 0.8s; }
+        .commitment-list li:nth-child(5) { animation-delay: 1s; }
+        
+        /* Petición especial */
+        .special-request {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, var(--pastel-red), var(--pastel-purple));
+            border-radius: 20px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            animation: pulse 4s ease-in-out infinite;
+            z-index: 2;
+        }
+        
+        .special-request h2 {
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        .request-text {
+            font-size: 1.2rem;
+            margin: 0 auto 25px;
+            line-height: 1.6;
+            position: relative;
+            z-index: 2;
+            max-width: 90%;
+        }
+        
+        /* Botones */
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 3;
+        }
+        
+        .btn {
+            padding: 18px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            animation: bounce 2s infinite;
+            z-index: 4;
+        }
+        
+        .btn-yes {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .btn-no {
+            background-color: #f44336;
+            color: white;
+            animation-delay: 0.5s;
+        }
+        
+        /* Elementos decorativos */
+        .floating-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .heart {
+            position: absolute;
+            color: var(--pastel-red);
+            font-size: 1.2rem;
+            opacity: 0.7;
+            animation: floatHearts 6s ease-in-out infinite;
+        }
+        
+        .music-notes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .note {
+            position: absolute;
+            color: var(--pastel-blue);
+            font-size: 1.5rem;
+            opacity: 0.5;
+            animation: floatNotes 8s ease-in-out infinite;
+        }
+        
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes floatHearts {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+        
+        @keyframes floatNotes {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes codeFloat {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        @keyframes musicFloat {
+            0% { transform: translateY(100vh) scale(1); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+        }
+        
+        @keyframes poetryFloat {
+            0% { transform: translateY(100vh) rotate(-10deg); opacity: 1; }
+            100% { transform: translateY(-100px) rotate(10deg); opacity: 0; }
+        }
+        
+        @keyframes songFloat {
+            0% { transform: translateY(100vh) scale(1); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1.3) rotate(180deg); opacity: 0; }
+        }
+        
+        /* Efectos de confeti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: var(--pastel-red);
+            border-radius: 50%;
+            opacity: 0;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        /* Mensajes */
+        .message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            text-align: center;
+            max-width: 80%;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .message.active {
+            display: block;
+        }
+        
+        .message p {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .message button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            background: var(--pastel-purple);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        /* Responsive adicional */
+        @media (min-width: 480px) {
+            .skills-container {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .skill-card {
+                width: calc(50% - 10px);
+            }
+            
+            .buttons-container {
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            .btn {
+                min-width: 150px;
+            }
+            
+            .poem {
+                font-size: 1.2rem;
+                max-width: 85%;
+                padding: 35px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="floating-hearts" id="hearts-container"></div>
+            <div class="header-content">
+                <h1>Una Petición Especial</h1>
+                <p class="subtitle">De un amigo a otro, con todo respeto</p>
+            </div>
+        </header>
+        
+        <section class="introduction">
+            <h2>Una Conversación Sincera Entre Amigos</h2>
+            <p>Querido amigo,</p>
+            <p>Esta página es mi manera de pedirte respetuosamente tu permiso para conocer mejor a tu amiga, a quien consideras como una hija. Sé el lugar especial que ocupa en tu vida y valoro profundamente la confianza que me brindas al considerar esta petición.</p>
+            <p>Como programador, he creado esto para mostrar mi seriedad. Como artista, quiero demostrar la profundidad de mis intenciones.</p>
+        </section>
+        
+        <section class="skills">
+            <h2>Quién Soy Yo</h2>
+            <p style="text-align: center; margin-bottom: 20px; font-style: italic;">Toca cada tarjeta para descubrir mis pasiones</p>
+            <div class="skills-container">
+                <div class="skill-card" data-skill="programador">
+                    <div class="skill-icon"><i class="fas fa-laptop-code"></i></div>
+                    <h3>Programador</h3>
+                    <p>Construyo soluciones con lógica y creatividad, valorando la estructura y el compromiso.</p>
+                </div>
+                <div class="skill-card" data-skill="pianista">
+                    <div class="skill-icon"><i class="fas fa-music"></i></div>
+                    <h3>Pianista</h3>
+                    <p>Expreso lo que a veces las palabras no pueden capturar, a través de la música y las emociones.</p>
+                </div>
+                <div class="skill-card" data-skill="poeta">
+                    <div class="skill-icon"><i class="fas fa-pen-fancy"></i></div>
+                    <h3>Poeta</h3>
+                    <p>Busco la belleza en la honestidad, creando versos que nacen de la autenticidad.</p>
+                </div>
+                <div class="skill-card" data-skill="cantautor">
+                    <div class="skill-icon"><i class="fas fa-microphone-alt"></i></div>
+                    <h3>Cantautor</h3>
+                    <p>Combino música y palabras para expresar sentimientos genuinos.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="poem-section">
+            <h2>Palabras Sinceras</h2>
+            <div class="poem">
+                <p>Entre código y melodías,<br>
+                entre versos y canciones,<br>
+                he encontrado alguien especial<br>
+                que merece todo mi respeto.</p>
+                
+                <p>Su dedicación a la medicina<br>
+                habla de su compasión y fuerza.<br>
+                Su ciencia y mi arte<br>
+                podrían complementarse.</p>
+                
+                <p>No busco apresurar,<br>
+                sino conocer con calma.<br>
+                No prometo perfección,<br>
+                sino honestidad constante.</p>
+                
+                <p>¿Podría tener tu venia<br>
+                para iniciar un diálogo<br>
+                que podría convertirse<br>
+                en algo hermoso para ambos?</p>
+            </div>
+        </section>
+        
+        <section class="commitment">
+            <h2>Mi Compromiso Contigo y Con Ella</h2>
+            <p>Reconozco completamente el lugar especial que ella ocupa en tu vida, y quiero que sepas que:</p>
+            <ul class="commitment-list">
+                <li>Respetaré siempre sus tiempos, espacios y decisiones</li>
+                <li>Valoraré sus prioridades, especialmente su carrera médica</li>
+                <li>Seré completamente transparente en mis intenciones</li>
+                <li>Nunca afectaré la relación especial que tienen</li>
+                <li>Apreciaré el privilegio, sea cual sea el resultado</li>
+            </ul>
+            <p>Todo sería mediante conversación virtual, con el respeto y seriedad que ambos merecen.</p>
+        </section>
+        
+        <section class="special-request">
+            <div class="music-notes" id="notes-container"></div>
+            <h2>Mi Petición Respetuosa</h2>
+            <p class="request-text">Amigo, valoro tu criterio y respeto profundamente tu papel protector. ¿Me darías tu aprobación para conocerla mejor, comenzando con una conversación virtual?</p>
+            
+            <div class="buttons-container">
+                <button class="btn btn-yes" id="btnYes">Sí, cuentas con mi aprobación</button>
+                <button class="btn btn-no" id="btnNo">Prefiero que no en este momento</button>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Contenedor para elementos flotantes -->
+    <div class="floating-elements" id="floating-elements"></div>
+    
+    <!-- Mensajes emergentes -->
+    <div class="overlay" id="overlay"></div>
+    
+    <div class="message" id="messageYes">
+        <h3>¡Gracias, amigo!</h3>
+        <p>Tu confianza significa mucho para mí. Seré el caballero más respetuoso y valoraré este privilegio. ¡Eres un gran amigo!</p>
+        <button id="closeYes">Cerrar</button>
+    </div>
+    
+    <div class="message" id="messageNo">
+        <h3>Entiendo completamente</h3>
+        <p>Respeto tu decisión como amigo. Si en el futuro cambias de opinión, mi respeto y consideración permanecerán intactos.</p>
+        <button id="closeNo">Cerrar</button>
+    </div>
+
+    <script>
+        // Crear corazones flotantes
+        function createFloatingHearts() {
+            const container = document.getElementById('hearts-container');
+            const heartsCount = 20;
+            
+            for (let i = 0; i < heartsCount; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤';
+                heart.style.left = `${Math.random() * 100}%`;
+                heart.style.top = `${Math.random() * 100}%`;
+                heart.style.animationDelay = `${Math.random() * 5}s`;
+                container.appendChild(heart);
+            }
+        }
+        
+        // Crear notas musicales flotantes
+        function createMusicNotes() {
+            const container = document.getElementById('notes-container');
+            const notesCount = 15;
+            const notes = ['♪', '♫', '🎵', '🎶'];
+            
+            for (let i = 0; i < notesCount; i++) {
+                const note = document.createElement('div');
+                note.classList.add('note');
+                note.innerHTML = notes[Math.floor(Math.random() * notes.length)];
+                note.style.left = `${Math.random() * 100}%`;
+                note.style.top = `${Math.random() * 100}%`;
+                note.style.animationDelay = `${Math.random() * 8}s`;
+                container.appendChild(note);
+            }
+        }
+        
+        // Configurar animaciones para las tarjetas de habilidades
+        function setupSkillAnimations() {
+            const skillCards = document.querySelectorAll('.skill-card');
+            const floatingContainer = document.getElementById('floating-elements');
+            
+            skillCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const skillType = this.getAttribute('data-skill');
+                    activateSkillAnimation(skillType, floatingContainer);
+                });
+            });
+        }
+        
+        // Activar animaciones específicas para cada habilidad
+        function activateSkillAnimation(skillType, container) {
+            switch(skillType) {
+                case 'programador':
+                    createCodeElements(container);
+                    break;
+                case 'pianista':
+                    createMusicElements(container);
+                    break;
+                case 'poeta':
+                    createPoetryElements(container);
+                    break;
+                case 'cantautor':
+                    createSongElements(container);
+                    break;
+            }
+        }
+        
+        // Crear elementos de código para programador
+        function createCodeElements(container) {
+            const codeSnippets = [
+                'function amor() {',
+                'const corazon = true;',
+                'if (corazon) {',
+                'return "Eres especial";',
+                '}',
+                '}',
+                '<3 </3 <3',
+                'while (vida) {',
+                'amor++',
+                '}',
+                'console.log("Eres única");',
+                'let futuro = "contigo";',
+                'python: print("Te amo")',
+                'java: System.out.println("Eres hermosa");'
+            ];
+            
+            codeSnippets.forEach((snippet, index) => {
+                const element = document.createElement('div');
+                element.classList.add('code-element');
+                element.textContent = snippet;
+                element.style.left = `${Math.random() * 85 + 5}%`;
+                element.style.animation = `codeFloat ${3 + Math.random() * 2}s ease-in forwards`;
+                element.style.animationDelay = `${index * 0.1}s`;
+                container.appendChild(element);
+                
+                // Eliminar después de la animación
+                setTimeout(() => {
+                    if (element.parentNode) {
+                        element.parentNode.removeChild(element);
+                    }
+                }, 4000 + index * 100);
+            });
+        }
+        
+        // Crear elementos musicales para pianista
+        function createMusicElements(container) {
+            const musicSymbols = ['♩', '♪', '♫', '♬', '🎵', '🎶', '🎹', '🎼', '🎧', '🎤', '🎷', '🎺', '🎻', '🎸', '🥁'];
+            
+            musicSymbols.forEach((symbol, index) => {
+                const element = document.createElement('div');
+                element.classList.add('music-element');
+                element.textContent = symbol;
+                element.style.left = `${Math.random() * 85 + 5}%`;
+                element.style.animation = `musicFloat ${4 + Math.random() * 2}s ease-in forwards`;
+                element.style.animationDelay = `${index * 0.08}s`;
+                container.appendChild(element);
+                
+                // Eliminar después de la animación
+                setTimeout(() => {
+                    if (element.parentNode) {
+                        element.parentNode.removeChild(element);
+                    }
+                }, 5000 + index * 80);
+            });
+        }
+        
+        // Crear elementos poéticos para poeta
+        function createPoetryElements(container) {
+            const poetryWords = [
+                'Amor', 'Versos', 'Suspiros', 'Poesía',
+                'Corazón', 'Rima', 'Emoción', 'Belleza',
+                'Sentir', 'Palabra', 'Esencia', 'Alma',
+                'Pasión', 'Sonrisa', 'Mirada', 'Abrazo',
+                'Inspiración', 'Melodía', 'Armonía', 'Sueños'
+            ];
+            
+            poetryWords.forEach((word, index) => {
+                const element = document.createElement('div');
+                element.classList.add('poetry-element');
+                element.textContent = word;
+                element.style.left = `${Math.random() * 85 + 5}%`;
+                element.style.animation = `poetryFloat ${3.5 + Math.random() * 1.5}s ease-in forwards`;
+                element.style.animationDelay = `${index * 0.12}s`;
+                container.appendChild(element);
+                
+                // Eliminar después de la animación
+                setTimeout(() => {
+                    if (element.parentNode) {
+                        element.parentNode.removeChild(element);
+                    }
+                }, 4500 + index * 120);
+            });
+        }
+        
+        // Crear elementos de canción para cantautor
+        function createSongElements(container) {
+            const songLyrics = [
+                '🎵 Tu mirada...',
+                '🎶 Mi canción',
+                '✨ Eres luz',
+                '💫 Inspiración',
+                '🎤 Para ti canto',
+                '❤️ Con el alma',
+                '🎹 Melodía',
+                '🌟 Brillas',
+                '🎼 Compás de amor',
+                '🎧 Escúchame',
+                '🎪 Magia eres',
+                '🌈 Arcoíris'
+            ];
+            
+            songLyrics.forEach((lyric, index) => {
+                const element = document.createElement('div');
+                element.classList.add('song-element');
+                element.textContent = lyric;
+                element.style.left = `${Math.random() * 85 + 5}%`;
+                element.style.animation = `songFloat ${3.8 + Math.random() * 1.7}s ease-in forwards`;
+                element.style.animationDelay = `${index * 0.15}s`;
+                container.appendChild(element);
+                
+                // Eliminar después de la animación
+                setTimeout(() => {
+                    if (element.parentNode) {
+                        element.parentNode.removeChild(element);
+                    }
+                }, 4800 + index * 150);
+            });
+        }
+        
+        // Configurar botones de respuesta
+        function setupResponseButtons() {
+            const btnYes = document.getElementById('btnYes');
+            const btnNo = document.getElementById('btnNo');
+            const messageYes = document.getElementById('messageYes');
+            const messageNo = document.getElementById('messageNo');
+            const overlay = document.getElementById('overlay');
+            const closeYes = document.getElementById('closeYes');
+            const closeNo = document.getElementById('closeNo');
+            
+            btnYes.addEventListener('click', function() {
+                messageYes.classList.add('active');
+                overlay.classList.add('active');
+                createConfetti();
+            });
+            
+            btnNo.addEventListener('click', function() {
+                messageNo.classList.add('active');
+                overlay.classList.add('active');
+            });
+            
+            // Cuando se cierra el mensaje de "No", eliminar el botón "No"
+            closeNo.addEventListener('click', function() {
+                messageNo.classList.remove('active');
+                overlay.classList.remove('active');
+                
+                // Eliminar el botón "No" completamente
+                btnNo.remove();
+            });
+            
+            closeYes.addEventListener('click', function() {
+                messageYes.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+            
+            overlay.addEventListener('click', function() {
+                messageYes.classList.remove('active');
+                messageNo.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+        }
+        
+        // Crear efecto de confeti
+        function createConfetti() {
+            const colors = ['#ffb3c1', '#b3e0ff', '#d9b3ff', '#ffd700', '#98fb98'];
+            const confettiCount = 50;
+            
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.top = '-10px';
+                
+                document.body.appendChild(confetti);
+                
+                // Animación
+                const animation = confetti.animate([
+                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(${window.innerHeight}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                ], {
+                    duration: 2000 + Math.random() * 3000,
+                    easing: 'cubic-bezier(0.1, 0.2, 0.8, 0.9)'
+                });
+                
+                // Eliminar después de la animación
+                animation.onfinish = () => {
+                    confetti.remove();
+                };
+            }
+        }
+        
+        // Inicializar cuando el documento esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            createFloatingHearts();
+            createMusicNotes();
+            setupSkillAnimations();
+            setupResponseButtons();
+        });
+    </script>
+</body>
+</html>
